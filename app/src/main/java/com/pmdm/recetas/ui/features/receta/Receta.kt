@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -19,51 +20,53 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.pmdm.recetas.R
 import com.pmdm.recetas.ui.composables.buttonlike.ButtonLike
 import com.pmdm.recetas.ui.composables.buttonlike.ButtonLikeUiState
 
 @Composable
-fun Receta(
-    likeButtonState: ButtonLikeUiState,
-    recipeName: String,
-    recipeDescription: String,
-    recipeChef: String,
-    recipeBanner: Painter,
-    onLiked: () -> Unit
-) {
+fun Receta(recetaViewModel: RecetaViewModel = viewModel()) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         )
     ) {
         Column {
-            Image(
-                painter = recipeBanner,
-                contentDescription = recipeName,
-                modifier = Modifier.clip(shape = CardDefaults.shape)
+            AsyncImage(
+                model = recetaViewModel.recetaUiState.urlPhoto,
+                contentDescription = recetaViewModel.recetaUiState.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(200.dp)
+                    .clip(shape = CardDefaults.shape)
             )
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text(recipeName, style = MaterialTheme.typography.headlineSmall)
-                Text(recipeDescription)
+                Text(
+                    recetaViewModel.recetaUiState.name,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Text(recetaViewModel.recetaUiState.description)
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(recipeChef)
+                    Text(recetaViewModel.recetaUiState.chef)
                     ButtonLike(
-                        liked = likeButtonState.liked,
-                        likes = likeButtonState.likeCount,
-                        onLiked = onLiked
+                        liked = recetaViewModel.recetaUiState.liked,
+                        likes = recetaViewModel.recetaUiState.likes,
+                        onLiked = { recetaViewModel.onRecetaEvent(RecetaEvent.OnLiked) }
                     )
                 }
             }
@@ -74,22 +77,5 @@ fun Receta(
 @Composable
 @Preview(showBackground = true)
 fun RecetaPreview() {
-    var likeButtonUiState by remember {
-        mutableStateOf(ButtonLikeUiState(4, true))
-    }
-    Receta(
-        likeButtonState = likeButtonUiState,
-        recipeName = "Magdalenas de la abuela",
-        recipeDescription = "Fabulosas magdalenas con pepitas de chocolate y un suave sabor a naranja.",
-        recipeChef = "Carlos Arguiñano",
-        recipeBanner = painterResource(R.drawable.magdalenas),
-        onLiked = {
-            val newLiked = !likeButtonUiState.liked
-            val newCount = if (newLiked) likeButtonUiState.likeCount + 1 else likeButtonUiState.likeCount - 1
-            likeButtonUiState = likeButtonUiState.copy(
-                liked = newLiked,
-                likeCount = newCount
-            )
-        }
-    )
+    Receta()
 }

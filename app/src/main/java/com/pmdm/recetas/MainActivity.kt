@@ -22,7 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pmdm.recetas.ui.composables.buttonlike.ButtonLikeUiState
 import com.pmdm.recetas.ui.features.receta.Receta
+import com.pmdm.recetas.ui.features.receta.RecetaViewModel
 import com.pmdm.recetas.ui.theme.RecetasTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.pmdm.recetas.ui.features.receta.RecetaEvent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,40 +42,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RecetaPreview() {
 
-    // Aquí definiremos los estados.
-    var likeUiState by remember {
-        mutableStateOf(ButtonLikeUiState(likeCount = 8, liked = true))
-    }
-    val onLocallyLikePressed: () -> Unit = {
-        val newLiked = !likeUiState.liked
-        val newLikeCount = if (newLiked) likeUiState.likeCount + 1 else likeUiState.likeCount - 1
-        likeUiState = likeUiState.copy(
-            liked = newLiked,
-            likeCount = newLikeCount
-        )
-    }
-    val onRemoteLikePressed: () -> Unit = {
-        val newLikeCount = likeUiState.likeCount + 1
-        likeUiState = likeUiState.copy(
-            likeCount = newLikeCount
-        )
-    }
+    val recetaViewModel: RecetaViewModel = viewModel()
 
     RecetasTheme {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Receta(
-                likeButtonState = likeUiState,
-                recipeName = "Magdalemas de la abuela",
-                recipeDescription = "Fabulosas magdalenas con pepitas de chocolate y un suave sabor a naranja.",
-                recipeChef = "Carlos Arguiñano",
-                recipeBanner = painterResource(R.drawable.magdalenas),
-                onLiked = onLocallyLikePressed
-            )
+            Receta(recetaViewModel)
             Spacer(modifier = Modifier.size(20.dp))
-            Button(onClick = onRemoteLikePressed) {
+            Button(onClick = { recetaViewModel.onRecetaEvent(RecetaEvent.OnRemoteLiked) }) {
                 Text(text = "Otro usuario pulsa Like")
             }
         }
