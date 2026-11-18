@@ -1,7 +1,6 @@
-package com.pmdm.recetas.ui.features
+package com.pmdm.recetas.ui.features.receta
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,11 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pmdm.recetas.R
 import com.pmdm.recetas.ui.composables.buttonlike.ButtonLike
-
-data class ButtonLikeUiState(
-    val likeCount: Int,
-    val liked: Boolean
-)
+import com.pmdm.recetas.ui.composables.buttonlike.ButtonLikeUiState
 
 @Composable
 fun Receta(
